@@ -15,7 +15,7 @@ It will attempt to reconnect if the wifi wasn't disconnected manually.
 ### Usage
 
 To add to your current idf
-Run ``idf.py add-dependency "espressif/esp-now=*"``
+Run ``idf.py add-dependency "ucflumm/simple_wifi=*"``
 
 Make sure to add ``#include "simple_wifi.h"`` in the preprocessor declarations.
 
