@@ -6,6 +6,7 @@
 #include "esp_netif.h"
 #include <string.h>
 
+static const char* TAG = "wifi_manager";
 static EventGroupHandle_t s_wifi_event_group;
 
 /**
@@ -18,10 +19,19 @@ static EventGroupHandle_t s_wifi_event_group;
 
 static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
+        ESP_LOGI(TAG, "WiFi station started, connecting to AP...");
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        esp_wifi_connect();
+        wifi_event_sta_disconnected_t* disconnected = (wifi_event_sta_disconnected_t*) event_data;
+        ESP_LOGI(TAG, "Disconnected from SSID: %s, Reason: %d", disconnected->ssid, disconnected->reason);
+        // Reconnect logic if not a manual disconnect
+        if (disconnected->reason != WIFI_REASON_ASSOC_LEAVE) {
+            ESP_LOGI(TAG, "Attempting to reconnect...");
+            esp_wifi_connect();
+        }
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
+        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
+        ESP_LOGI(TAG, "Got IP: " IPSTR, IP2STR(&event->ip_info.ip));
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
 }
@@ -54,6 +64,7 @@ void wifi_manager_init(const char* ssid, const char* password) {
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config);
     esp_wifi_start();
+    ESP_LOGI(TAG, "WiFi initialization complete, waiting for IP...");
     xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT, false, true, portMAX_DELAY);
 }
 
