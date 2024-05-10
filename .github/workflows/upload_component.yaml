@@ -17,10 +17,13 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install IDF
+      - name: Clone ESP-IDF
+        run: git clone --recursive https://github.com/espressif/esp-idf.git
+
+      - name: Install ESP-IDF Tools
         run: |
-          git clone --recursive https://github.com/espressif/esp-idf.git
           . $GITHUB_WORKSPACE/esp-idf/export.sh
+          python $GITHUB_WORKSPACE/esp-idf/tools/idf_tools.py install
 
       - name: Install Compote
         run: pip install compote
