@@ -1,3 +1,4 @@
 version: "1.0.0"
 description: "Wifi connection component for ESP-IDF only requires SSID and Password"
 license: "MIT"
+url: "https://github.com/ucflumm/simple_wifi.git"
