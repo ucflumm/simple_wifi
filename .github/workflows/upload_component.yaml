@@ -1,0 +1,31 @@
+name: Publish Component to IDF Registry
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install IDF
+        run: |
+          git clone --recursive https://github.com/espressif/esp-idf.git
+          . $GITHUB_WORKSPACE/esp-idf/export.sh
+
+      - name: Install Compote
+        run: pip install compote
+
+      - name: Publish Component
+        env:
+          IDF_COMPONENT_API_TOKEN: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
+        run: compote component upload --namespace espressif --name simple_wifi
