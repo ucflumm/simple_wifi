@@ -15,5 +15,5 @@ jobs:
         with:
           name: "simple_wifi"
           version: ${{ github.ref_name }}
-          namespace: "espressif"
+          namespace: "ucflumm"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}
