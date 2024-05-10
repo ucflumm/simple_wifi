@@ -14,10 +14,10 @@ It will attempt to reconnect if the wifi wasn't disconnected manually.
 
 ### Usage
 
-To add to your current idf project.
+To add to your current idf
 Run ``idf.py add-dependency "espressif/esp-now=*"``
 
-Refer to [![Espressif Docs](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-component-manager.html)
+Refer to [Espressif Docs](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-component-manager.html)
 
 Make sure to add ``#include "simple_wifi.h"`` in the preprocessor declarations.
 
