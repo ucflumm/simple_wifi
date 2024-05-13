@@ -37,6 +37,29 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 }
 
 /**
+ * @brief Check if NVS has been initialized, and initialize it if not
+*/
+static void check_nvs_initialization() {
+    nvs_handle_t my_handle;
+    esp_err_t err = nvs_open("storage", NVS_READONLY, &my_handle);
+
+    if (err == ESP_ERR_NVS_NOT_INITIALIZED) {
+        ESP_LOGI("NVS", "NVS has not been initialized. Initializing now...");
+        err = nvs_flash_init();
+        if (err != ESP_OK) {
+            ESP_LOGE("NVS", "Failed to initialize NVS: %s", esp_err_to_name(err));
+        } else {
+            ESP_LOGI("NVS", "NVS initialized successfully.");
+        }
+    } else if (err == ESP_OK) {
+        ESP_LOGI("NVS", "NVS is already initialized.");
+        nvs_close(my_handle); // Close handle if it was successfully opened
+    } else {
+        ESP_LOGE("NVS", "Error (%s) opening NVS handle!", esp_err_to_name(err));
+    }
+}
+
+/**
  * @brief Initialize WiFi with the given SSID and password
  * @param ssid SSID of the WiFi network
  * @param password Password of the WiFi network
@@ -44,7 +67,8 @@ static void event_handler(void* arg, esp_event_base_t event_base, int32_t event_
 
 void wifi_manager_init(const char* ssid, const char* password) {
     s_wifi_event_group = xEventGroupCreate();
-    nvs_flash_init();
+    // This now checks if NVS has been initialized
+    check_nvs_initialization();
     esp_netif_init();
     esp_event_loop_create_default();
 
